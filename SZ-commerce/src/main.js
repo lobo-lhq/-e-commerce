@@ -33,7 +33,7 @@ import Vuex from 'vuex'
 // 正常的服务器
 axios.defaults.baseURL = 'http://47.106.148.205:8899';
 //让ajax携带cookie
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 // 崩溃后的备用服务器
 // axios.defaults.baseURL = 'http://127.0.0.1:8848';
 // 挂载到Vue的原型上->Vue实例化出来的对象 共用 vue-resource this.$http
@@ -59,39 +59,43 @@ const router = new VueRouter({
   routes: [
     // 访问的是 / 打到(重定向)
     {
-      path: "/",
+      path    : "/",
       redirect: "/index"
     },
     // index 都显示 index这个组件
     {
-      path: "/index",
+      path     : "/index",
       component: index
     },
     {
       // goodsInfo/:id 参数
       // form表单中的 name属性
-      path: "/goodsInfo/:id",
+      path     : "/goodsInfo/:id",
       component: goodsInfo
     },
     {
-      path: "/buyCar",
+      path     : "/buyCar",
       component: buyCar
     },
     // 订单支付路由
     // 动态路由匹配
     {
-      path:"/payOrder/:ids",
-      component:payOrder
+      path     : "/payOrder/:ids",
+      component: payOrder,
+      // 路由元信息
+      meta: { checkLogin: true}
     },
     // 登陆路由
     {
-      path:'/login',
-      component:login
+      path     : '/login',
+      component: login
     },
     // 订单详情路由
     {
-      path:"/orderInfo/:orderid",
-      component:orderInfo
+      path     : "/orderInfo/:orderid",
+      component: orderInfo,
+      // 路由元信息
+      meta: { checkLogin: true }
     }
   ]
 });
@@ -114,9 +118,9 @@ const store = new Vuex.Store({
     // 数量
     // buyList: {}
     buyList,
-    isLogin:false,
+    isLogin: false,
     // 来时的路由
-    fromPath:"/"
+    fromPath: "/"
   },
   // 类似于computed的属性
   getters: {
@@ -135,8 +139,8 @@ const store = new Vuex.Store({
     buyGood(state, info) {
       if (state.buyList[info.goodId]) {
         // 解决字符串累加问题
-        let oldNum = parseInt(state.buyList[info.goodId]);
-        oldNum += parseInt(info.goodNum);
+        let oldNum  = parseInt(state.buyList[info.goodId]);
+            oldNum += parseInt(info.goodNum);
         // 重新赋值
         state.buyList[info.goodId] = oldNum;
       } else {
@@ -172,7 +176,8 @@ router.beforeEach((to, from, next) => {
   store.commit('saveFromPath',from.path);
 
   // from 从哪来 to 去哪里 next()下一个
-  if(to.path=='/payOrder'){
+  // if(to.path=='/payOrder'){
+    if(to.meta.checkLogin){
     // 判断
     axios.get("/site/account/islogin")
     .then(response=>{
